@@ -1,10 +1,8 @@
+use std::collections::HashMap;
+
 use zbus::{Connection, Result, proxy};
 fn main() {
-    let result = futures::executor::block_on(get_profile()).unwrap();
-    println!("Current profile is {result}");
-    futures::executor::block_on(set_profile("performance".to_string())).unwrap();
-    let result = futures::executor::block_on(get_profile()).unwrap();
-    println!("Current profile is {result}");
+    futures::executor::block_on(print_info()).unwrap();
 }
 
 #[proxy(
@@ -13,25 +11,80 @@ fn main() {
     default_path = "/org/freedesktop/UPower/PowerProfiles"
 )]
 trait Ppd {
+    fn hold_profile(&self, profile: String, reason: String, application_id: String) -> Result<u32>;
+
+    fn release_profile(&self, cookie: u32) -> Result<()>;
+
+    fn set_action_enabled(&self, action: String, enabled: bool) -> Result<()>;
+
+    #[zbus(signal)]
+    fn profile_released(&self) -> Result<u32>;
+
     #[zbus(property)]
     fn active_profile(&self) -> Result<String>;
 
     #[zbus(property)]
     fn set_active_profile(&self, string: String) -> Result<()>;
+
+    #[zbus(property)]
+    fn performance_inhibited(&self) -> Result<String>;
+
+    #[zbus(property)]
+    fn performance_degraded(&self) -> Result<String>;
+
+    #[zbus(property)]
+    fn profiles(&self) -> Result<Vec<HashMap<String, zbus::zvariant::Value>>>;
+
+    #[zbus(property)]
+    fn actions(&self) -> Result<Vec<String>>;
+
+    #[zbus(property)]
+    fn version(&self) -> Result<String>;
+
+    #[zbus(property)]
+    fn actions_info(&self) -> Result<Vec<HashMap<String, zbus::zvariant::Value>>>;
+
+    #[zbus(property)]
+    fn active_profile_holds(&self) -> Result<Vec<HashMap<String, zbus::zvariant::Value>>>;
+
+    #[zbus(property)]
+    fn battery_aware(&self) -> Result<bool>;
+
+    #[zbus(property)]
+    fn set_battery_aware(&self, value: bool) -> Result<()>;
 }
 
-async fn get_profile() -> Result<String> {
+async fn print_info() -> Result<()> {
     let connection = Connection::system().await?;
 
     let proxy = PpdProxy::new(&connection).await?;
+
     let reply = proxy.active_profile().await?;
-    Ok(reply)
-}
+    println!("Current profile is {reply}");
 
-async fn set_profile(string: String) -> Result<()> {
-    let connection = Connection::system().await?;
+    let reply = proxy.performance_inhibited().await?;
+    println!("Perf Inhibited is {reply}");
 
-    let proxy = PpdProxy::new(&connection).await?;
-    proxy.set_active_profile(string).await?;
+    let reply = proxy.performance_degraded().await?;
+    println!("Perf Degraded is {reply}");
+
+    let reply = proxy.actions().await?;
+    println!("Actions is {reply:?}");
+
+    let reply = proxy.version().await?;
+    println!("Version is {reply}");
+
+    let reply = proxy.actions_info().await?;
+    println!("Actions Info is {reply:?}");
+
+    let reply = proxy.active_profile_holds().await?;
+    println!("Active Profile Holds is {reply:?}");
+
+    let reply = proxy.battery_aware().await?;
+    println!("Battery aware is {reply}");
+
+    let reply = proxy.profiles().await?;
+    println!("Available profiles are {reply:?}");
+
     Ok(())
 }
