@@ -1,8 +1,19 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use zbus::zvariant::{DeserializeDict, OwnedValue, SerializeDict, Type, Value};
 
 use zbus::{Connection, Result, proxy};
 fn main() {
     futures::executor::block_on(print_info()).unwrap();
+}
+
+#[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
+#[zvariant(signature = "dict")]
+struct Profile {
+    Profile: String,
+    Driver: String,
+    PlatformDriver: String,
+    CpuDriver: String,
 }
 
 #[proxy(
@@ -33,7 +44,7 @@ trait Ppd {
     fn performance_degraded(&self) -> Result<String>;
 
     #[zbus(property)]
-    fn profiles(&self) -> Result<Vec<HashMap<String, zbus::zvariant::Value>>>;
+    fn profiles(&self) -> Result<Vec<Profile>>;
 
     #[zbus(property)]
     fn actions(&self) -> Result<Vec<String>>;
