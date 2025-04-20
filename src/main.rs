@@ -7,6 +7,7 @@ fn main() {
     futures::executor::block_on(print_info()).unwrap();
 }
 
+// see https://github.com/dbus2/zbus/issues/320
 #[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
 #[zvariant(signature = "dict")]
 struct Profile {
