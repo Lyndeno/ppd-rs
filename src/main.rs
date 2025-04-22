@@ -17,6 +17,14 @@ struct Profile {
     CpuDriver: String,
 }
 
+#[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
+#[zvariant(signature = "dict")]
+struct Action {
+    Name: String,
+    Description: String,
+    Enabled: bool,
+}
+
 #[proxy(
     interface = "org.freedesktop.UPower.PowerProfiles",
     default_service = "org.freedesktop.UPower.PowerProfiles",
@@ -54,7 +62,7 @@ trait Ppd {
     fn version(&self) -> Result<String>;
 
     #[zbus(property)]
-    fn actions_info(&self) -> Result<Vec<HashMap<String, zbus::zvariant::Value>>>;
+    fn actions_info(&self) -> Result<Vec<Action>>;
 
     #[zbus(property)]
     fn active_profile_holds(&self) -> Result<Vec<HashMap<String, zbus::zvariant::Value>>>;
