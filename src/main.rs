@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use zbus::zvariant::{DeserializeDict, OwnedValue, SerializeDict, Type, Value};
 
 use zbus::{Connection, Result, proxy};
@@ -21,6 +20,14 @@ struct Action {
     name: String,
     description: String,
     enabled: bool,
+}
+
+#[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
+#[zvariant(signature = "dict", rename_all = "PascalCase")]
+struct ActiveHold {
+    reason: String,
+    profile: String,
+    application_id: String,
 }
 
 #[proxy(
@@ -63,7 +70,7 @@ trait Ppd {
     fn actions_info(&self) -> Result<Vec<Action>>;
 
     #[zbus(property)]
-    fn active_profile_holds(&self) -> Result<Vec<HashMap<String, zbus::zvariant::Value>>>;
+    fn active_profile_holds(&self) -> Result<Vec<ActiveHold>>;
 
     #[zbus(property)]
     fn battery_aware(&self) -> Result<bool>;
