@@ -1,4 +1,3 @@
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use zbus::zvariant::{DeserializeDict, OwnedValue, SerializeDict, Type, Value};
 
@@ -7,22 +6,21 @@ fn main() {
     futures::executor::block_on(print_info()).unwrap();
 }
 
-// see https://github.com/dbus2/zbus/issues/320
 #[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
-#[zvariant(signature = "dict")]
+#[zvariant(signature = "dict", rename_all = "PascalCase")]
 struct Profile {
-    Profile: String,
-    Driver: String,
-    PlatformDriver: String,
-    CpuDriver: String,
+    profile: String,
+    driver: String,
+    platform_driver: String,
+    cpu_driver: String,
 }
 
 #[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
-#[zvariant(signature = "dict")]
+#[zvariant(signature = "dict", rename_all = "PascalCase")]
 struct Action {
-    Name: String,
-    Description: String,
-    Enabled: bool,
+    name: String,
+    description: String,
+    enabled: bool,
 }
 
 #[proxy(
