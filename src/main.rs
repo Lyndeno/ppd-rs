@@ -1,8 +1,35 @@
+use clap::Parser;
 use zbus::zvariant::{DeserializeDict, OwnedValue, SerializeDict, Type, Value};
+
+mod args;
+use args::Args;
 
 use zbus::{Connection, Result, proxy};
 fn main() {
-    futures::executor::block_on(print_info()).unwrap();
+    let cli = Args::parse();
+    match cli.command {
+        Some(c) => match c {
+            args::Commands::Get => futures::executor::block_on(print_profile()).unwrap(),
+            args::Commands::List => todo!(),
+            args::Commands::ListHolds => todo!(),
+            args::Commands::Set { profile } => todo!(),
+            args::Commands::ListActions => todo!(),
+            args::Commands::Launch {
+                arguments,
+                profile,
+                reason,
+                appid,
+            } => todo!(),
+            args::Commands::QueryBatteryAware => todo!(),
+            args::Commands::ConfigureAction {
+                action,
+                enable,
+                disable,
+            } => todo!(),
+            args::Commands::ConfigureBatteryAware { enable, disable } => todo!(),
+        },
+        _ => futures::executor::block_on(print_info()).unwrap(),
+    };
 }
 
 #[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
@@ -77,6 +104,14 @@ trait Ppd {
 
     #[zbus(property)]
     fn set_battery_aware(&self, value: bool) -> Result<()>;
+}
+
+async fn print_profile() -> Result<()> {
+    let connection = Connection::system().await?;
+    let proxy = PpdProxy::new(&connection).await?;
+    let reply = proxy.active_profile().await?;
+    println!("{reply}");
+    Ok(())
 }
 
 async fn print_info() -> Result<()> {
