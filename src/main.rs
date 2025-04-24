@@ -32,10 +32,9 @@ fn main() -> Result<()> {
                 enable: _,
                 disable: _,
             } => todo!(),
-            args::Commands::ConfigureBatteryAware {
-                enable: _,
-                disable: _,
-            } => todo!(),
+            args::Commands::ConfigureBatteryAware { enable, disable } => {
+                configure_battery_aware(&proxy, enable, disable)?
+            }
         },
         _ => list(&proxy)?,
     };
@@ -173,6 +172,17 @@ fn list_actions(proxy: &PpdProxyBlocking) -> Result<()> {
         println!("Name: {}", action.name);
         println!("Description: {}", action.description);
         println!("Enabled: {}", action.enabled);
+    }
+    Ok(())
+}
+
+fn configure_battery_aware(proxy: &PpdProxyBlocking, enable: bool, disable: bool) -> Result<()> {
+    if enable && disable {
+        println!("Error: can't set both enable and disable");
+    } else if !(enable || disable) {
+        println!("Error: enable or disable is required");
+    } else {
+        proxy.set_battery_aware(enable)?;
     }
     Ok(())
 }
