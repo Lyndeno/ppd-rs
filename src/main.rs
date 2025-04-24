@@ -1,5 +1,5 @@
 use clap::Parser;
-use zbus::zvariant::{DeserializeDict, OwnedValue, SerializeDict, Type, Value};
+use zbus::zvariant::{DeserializeDict, Optional, OwnedValue, SerializeDict, Type, Value};
 
 mod args;
 use args::Args;
@@ -82,7 +82,7 @@ trait Ppd {
     fn performance_inhibited(&self) -> Result<String>;
 
     #[zbus(property)]
-    fn performance_degraded(&self) -> Result<String>;
+    fn performance_degraded(&self) -> Result<Optional<String>>;
 
     #[zbus(property)]
     fn profiles(&self) -> Result<Vec<Profile>>;
@@ -126,7 +126,7 @@ async fn print_info() -> Result<()> {
     println!("Perf Inhibited is {reply}");
 
     let reply = proxy.performance_degraded().await?;
-    println!("Perf Degraded is {reply}");
+    println!("Perf Degraded is {reply:?}");
 
     let reply = proxy.actions().await?;
     println!("Actions is {reply:?}");
