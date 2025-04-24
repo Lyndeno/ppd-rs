@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use clap::Parser;
 use zbus::zvariant::{DeserializeDict, Optional, OwnedValue, SerializeDict, Type, Value};
 
@@ -16,7 +18,7 @@ fn main() -> Result<()> {
             args::Commands::Get => print_profile(&proxy)?,
             args::Commands::List => list(&proxy)?,
             args::Commands::ListHolds => todo!(),
-            args::Commands::Set { profile: _ } => todo!(),
+            args::Commands::Set { profile } => set(&proxy, profile)?,
             args::Commands::ListActions => todo!(),
             args::Commands::Launch {
                 arguments: _,
@@ -142,6 +144,20 @@ fn list(proxy: &PpdProxyBlocking) -> Result<()> {
                 .to_string();
             println!("    Degraded:  {}", degraded_string);
         }
+    }
+    Ok(())
+}
+
+fn set(proxy: &PpdProxyBlocking, profile: String) -> Result<()> {
+    let profiles_names: HashSet<_> = proxy
+        .profiles()?
+        .iter()
+        .map(|x| x.profile.clone())
+        .collect();
+    if profiles_names.contains(&profile) {
+        proxy.set_active_profile(profile)?
+    } else {
+        println!("Invalid profile");
     }
     Ok(())
 }
