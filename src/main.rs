@@ -14,7 +14,7 @@ fn main() -> Result<()> {
     match cli.command {
         Some(c) => match c {
             args::Commands::Get => print_profile(&proxy)?,
-            args::Commands::List => todo!(),
+            args::Commands::List => list(&proxy)?,
             args::Commands::ListHolds => todo!(),
             args::Commands::Set { profile: _ } => todo!(),
             args::Commands::ListActions => todo!(),
@@ -35,7 +35,7 @@ fn main() -> Result<()> {
                 disable: _,
             } => todo!(),
         },
-        _ => print_info(&proxy)?,
+        _ => list(&proxy)?,
     };
     Ok(())
 }
@@ -120,33 +120,28 @@ fn print_profile(proxy: &PpdProxyBlocking) -> Result<()> {
     Ok(())
 }
 
-fn print_info(proxy: &PpdProxyBlocking) -> Result<()> {
-    let reply = proxy.active_profile()?;
-    println!("Current profile is {reply}");
+fn list(proxy: &PpdProxyBlocking) -> Result<()> {
+    let current = proxy.active_profile()?;
+    let profiles = proxy.profiles()?;
 
-    let reply = proxy.performance_inhibited()?;
-    println!("Perf Inhibited is {reply}");
-
-    let reply = proxy.performance_degraded()?;
-    println!("Perf Degraded is {reply:?}");
-
-    let reply = proxy.actions()?;
-    println!("Actions is {reply:?}");
-
-    let reply = proxy.version()?;
-    println!("Version is {reply}");
-
-    let reply = proxy.actions_info()?;
-    println!("Actions Info is {reply:?}");
-
-    let reply = proxy.active_profile_holds()?;
-    println!("Active Profile Holds is {reply:?}");
-
-    let reply = proxy.battery_aware()?;
-    println!("Battery aware is {reply}");
-
-    let reply = proxy.profiles()?;
-    println!("Available profiles are {reply:?}");
-
+    for profile in profiles {
+        if current == profile.profile {
+            println!("* {}:", profile.profile);
+        } else {
+            println!("  {}:", profile.profile);
+        }
+        println!("    CpuDriver:  {}", profile.cpu_driver);
+        if let Some(s) = profile.platform_driver {
+            println!("    PlatformDriver:  {}", s);
+        }
+        if profile.profile == "performance" {
+            let degraded_string = proxy
+                .performance_degraded()?
+                .as_ref()
+                .unwrap_or(&String::from("no"))
+                .to_string();
+            println!("    Degraded:  {}", degraded_string);
+        }
+    }
     Ok(())
 }
