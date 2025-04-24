@@ -26,7 +26,7 @@ fn main() -> Result<()> {
                 reason: _,
                 appid: _,
             } => todo!(),
-            args::Commands::QueryBatteryAware => todo!(),
+            args::Commands::QueryBatteryAware => query_battery_aware(&proxy)?,
             args::Commands::ConfigureAction {
                 action: _,
                 enable: _,
@@ -159,5 +159,11 @@ fn set(proxy: &PpdProxyBlocking, profile: String) -> Result<()> {
     } else {
         println!("Invalid profile");
     }
+    Ok(())
+}
+
+fn query_battery_aware(proxy: &PpdProxyBlocking) -> Result<()> {
+    let ba = proxy.battery_aware()?;
+    println!("Dynamic changes from charger and battery events: {}", ba);
     Ok(())
 }
