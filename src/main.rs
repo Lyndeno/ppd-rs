@@ -19,7 +19,7 @@ fn main() -> Result<()> {
             args::Commands::List => list(&proxy)?,
             args::Commands::ListHolds => todo!(),
             args::Commands::Set { profile } => set(&proxy, profile)?,
-            args::Commands::ListActions => todo!(),
+            args::Commands::ListActions => list_actions(&proxy)?,
             args::Commands::Launch {
                 arguments: _,
                 profile: _,
@@ -165,5 +165,14 @@ fn set(proxy: &PpdProxyBlocking, profile: String) -> Result<()> {
 fn query_battery_aware(proxy: &PpdProxyBlocking) -> Result<()> {
     let ba = proxy.battery_aware()?;
     println!("Dynamic changes from charger and battery events: {}", ba);
+    Ok(())
+}
+
+fn list_actions(proxy: &PpdProxyBlocking) -> Result<()> {
+    for action in proxy.actions_info()? {
+        println!("Name: {}", action.name);
+        println!("Description: {}", action.description);
+        println!("Enabled: {}", action.enabled);
+    }
     Ok(())
 }
