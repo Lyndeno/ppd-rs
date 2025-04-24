@@ -10,7 +10,7 @@ fn main() {
 struct Profile {
     profile: String,
     driver: String,
-    platform_driver: String,
+    platform_driver: Option<String>,
     cpu_driver: String,
 }
 
