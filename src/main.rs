@@ -4,12 +4,16 @@ use zbus::zvariant::{DeserializeDict, Optional, OwnedValue, SerializeDict, Type,
 mod args;
 use args::Args;
 
-use zbus::{Connection, Result, proxy};
-fn main() {
+use zbus::blocking::Connection;
+use zbus::{Result, proxy};
+fn main() -> Result<()> {
     let cli = Args::parse();
+
+    let connection = Connection::system()?;
+    let proxy = PpdProxyBlocking::new(&connection)?;
     match cli.command {
         Some(c) => match c {
-            args::Commands::Get => futures::executor::block_on(print_profile()).unwrap(),
+            args::Commands::Get => print_profile(&proxy)?,
             args::Commands::List => todo!(),
             args::Commands::ListHolds => todo!(),
             args::Commands::Set { profile: _ } => todo!(),
@@ -31,8 +35,9 @@ fn main() {
                 disable: _,
             } => todo!(),
         },
-        _ => futures::executor::block_on(print_info()).unwrap(),
+        _ => print_info(&proxy)?,
     };
+    Ok(())
 }
 
 #[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
@@ -109,44 +114,38 @@ trait Ppd {
     fn set_battery_aware(&self, value: bool) -> Result<()>;
 }
 
-async fn print_profile() -> Result<()> {
-    let connection = Connection::system().await?;
-    let proxy = PpdProxy::new(&connection).await?;
-    let reply = proxy.active_profile().await?;
+fn print_profile(proxy: &PpdProxyBlocking) -> Result<()> {
+    let reply = proxy.active_profile()?;
     println!("{reply}");
     Ok(())
 }
 
-async fn print_info() -> Result<()> {
-    let connection = Connection::system().await?;
-
-    let proxy = PpdProxy::new(&connection).await?;
-
-    let reply = proxy.active_profile().await?;
+fn print_info(proxy: &PpdProxyBlocking) -> Result<()> {
+    let reply = proxy.active_profile()?;
     println!("Current profile is {reply}");
 
-    let reply = proxy.performance_inhibited().await?;
+    let reply = proxy.performance_inhibited()?;
     println!("Perf Inhibited is {reply}");
 
-    let reply = proxy.performance_degraded().await?;
+    let reply = proxy.performance_degraded()?;
     println!("Perf Degraded is {reply:?}");
 
-    let reply = proxy.actions().await?;
+    let reply = proxy.actions()?;
     println!("Actions is {reply:?}");
 
-    let reply = proxy.version().await?;
+    let reply = proxy.version()?;
     println!("Version is {reply}");
 
-    let reply = proxy.actions_info().await?;
+    let reply = proxy.actions_info()?;
     println!("Actions Info is {reply:?}");
 
-    let reply = proxy.active_profile_holds().await?;
+    let reply = proxy.active_profile_holds()?;
     println!("Active Profile Holds is {reply:?}");
 
-    let reply = proxy.battery_aware().await?;
+    let reply = proxy.battery_aware()?;
     println!("Battery aware is {reply}");
 
-    let reply = proxy.profiles().await?;
+    let reply = proxy.profiles()?;
     println!("Available profiles are {reply:?}");
 
     Ok(())
