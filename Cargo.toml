@@ -7,3 +7,8 @@ license = "MIT"
 [dependencies]
 zbus = {git = "https://github.com/lyndeno/zbus", branch = "rename_value_clean" }
 clap = { version = "4.*.*", features = ["derive"] }
+
+[build-dependencies]
+clap = { version = "4.*.*", features = ["derive"] }
+clap_complete = "4.*.*"
+clap_mangen = "0.2.*"
