@@ -1,6 +1,6 @@
 use zbus::zvariant::{DeserializeDict, Optional, OwnedValue, SerializeDict, Type, Value};
 
-use zbus::{Result, proxy};
+use zbus::{Result as ZbusResult, proxy};
 
 #[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
 #[zvariant(signature = "dict", rename_all = "PascalCase")]
@@ -33,45 +33,54 @@ pub struct ActiveHold {
     default_path = "/org/freedesktop/UPower/PowerProfiles"
 )]
 pub trait Ppd {
-    fn hold_profile(&self, profile: String, reason: String, application_id: String) -> Result<u32>;
+    fn hold_profile(
+        &self,
+        profile: String,
+        reason: String,
+        application_id: String,
+    ) -> ZbusResult<u32>;
 
-    fn release_profile(&self, cookie: u32) -> Result<()>;
+    fn release_profile(&self, cookie: u32) -> ZbusResult<()>;
 
-    fn set_action_enabled(&self, action: String, enabled: bool) -> Result<()>;
+    fn set_action_enabled(&self, action: String, enabled: bool) -> ZbusResult<()>;
 
     #[zbus(signal)]
-    fn profile_released(&self) -> Result<u32>;
+    fn profile_released(&self) -> ZbusResult<u32>;
 
     #[zbus(property)]
-    fn active_profile(&self) -> Result<String>;
+    fn active_profile(&self) -> ZbusResult<String>;
 
     #[zbus(property)]
-    fn set_active_profile(&self, string: String) -> Result<()>;
+    fn set_active_profile(&self, string: String) -> ZbusResult<()>;
 
     #[zbus(property)]
-    fn performance_inhibited(&self) -> Result<String>;
+    fn performance_inhibited(&self) -> ZbusResult<String>;
 
     #[zbus(property)]
-    fn performance_degraded(&self) -> Result<Optional<String>>;
+    fn performance_degraded(&self) -> ZbusResult<Optional<String>>;
 
     #[zbus(property)]
-    fn profiles(&self) -> Result<Vec<Profile>>;
+    fn profiles(&self) -> ZbusResult<Vec<Profile>>;
 
     #[zbus(property)]
-    fn actions(&self) -> Result<Vec<String>>;
+    fn actions(&self) -> ZbusResult<Vec<String>>;
 
     #[zbus(property)]
-    fn version(&self) -> Result<String>;
+    fn version(&self) -> ZbusResult<String>;
 
     #[zbus(property)]
-    fn actions_info(&self) -> Result<Vec<Action>>;
+    fn actions_info(&self) -> ZbusResult<Vec<Action>>;
 
     #[zbus(property)]
-    fn active_profile_holds(&self) -> Result<Vec<ActiveHold>>;
+    fn active_profile_holds(&self) -> ZbusResult<Vec<ActiveHold>>;
 
     #[zbus(property)]
-    fn battery_aware(&self) -> Result<bool>;
+    fn battery_aware(&self) -> ZbusResult<bool>;
 
     #[zbus(property)]
-    fn set_battery_aware(&self, value: bool) -> Result<()>;
+    fn set_battery_aware(&self, value: bool) -> ZbusResult<()>;
 }
+
+// Re-export error module
+pub mod error;
+pub use error::{PpdError, Result};

@@ -4,10 +4,12 @@ use clap::Parser;
 use ppd::PpdProxyBlocking;
 
 mod args;
+
 use args::Args;
-use zbus::Result;
+use ppd::error::{PpdError, Result};
 
 use zbus::blocking::Connection;
+
 fn main() -> Result<()> {
     let cli = Args::parse();
 
@@ -17,7 +19,9 @@ fn main() -> Result<()> {
         Some(c) => match c {
             args::Commands::Get => print_profile(&proxy)?,
             args::Commands::List => list(&proxy)?,
-            args::Commands::ListHolds => todo!(),
+            args::Commands::ListHolds => {
+                Err(PpdError::Unimplemented("ListHolds command".to_string()))?
+            }
             args::Commands::Set { profile } => set(&proxy, profile)?,
             args::Commands::ListActions => list_actions(&proxy)?,
             args::Commands::Launch {
@@ -25,13 +29,15 @@ fn main() -> Result<()> {
                 profile: _,
                 reason: _,
                 appid: _,
-            } => todo!(),
+            } => Err(PpdError::Unimplemented("Launch command".to_string()))?,
             args::Commands::QueryBatteryAware => query_battery_aware(&proxy)?,
             args::Commands::ConfigureAction {
                 action: _,
                 enable: _,
                 disable: _,
-            } => todo!(),
+            } => Err(PpdError::Unimplemented(
+                "ConfigureAction command".to_string(),
+            ))?,
             args::Commands::ConfigureBatteryAware { enable, disable } => {
                 configure_battery_aware(&proxy, enable, disable)?
             }
@@ -80,11 +86,11 @@ fn set(proxy: &PpdProxyBlocking, profile: String) -> Result<()> {
         .map(|x| x.profile.clone())
         .collect();
     if profiles_names.contains(&profile) {
-        proxy.set_active_profile(profile)?
+        proxy.set_active_profile(profile)?;
+        Ok(())
     } else {
-        println!("Invalid profile");
+        Err(PpdError::InvalidProfile(profile))
     }
-    Ok(())
 }
 
 fn query_battery_aware(proxy: &PpdProxyBlocking) -> Result<()> {
@@ -104,11 +110,15 @@ fn list_actions(proxy: &PpdProxyBlocking) -> Result<()> {
 
 fn configure_battery_aware(proxy: &PpdProxyBlocking, enable: bool, disable: bool) -> Result<()> {
     if enable && disable {
-        println!("Error: can't set both enable and disable");
+        Err(PpdError::InvalidConfig(
+            "can't set both enable and disable".to_string(),
+        ))
     } else if !(enable || disable) {
-        println!("Error: enable or disable is required");
+        Err(PpdError::InvalidConfig(
+            "enable or disable is required".to_string(),
+        ))
     } else {
         proxy.set_battery_aware(enable)?;
+        Ok(())
     }
-    Ok(())
 }
