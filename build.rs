@@ -1,5 +1,5 @@
 use clap::{CommandFactory, ValueEnum};
-use clap_complete::{Shell, generate_to};
+use clap_complete::Shell;
 use std::env;
 use std::io::Error;
 use std::path::PathBuf;
@@ -18,15 +18,10 @@ fn main() -> Result<(), Error> {
 
     let mut cmd = <Args as CommandFactory>::command();
     for &shell in Shell::value_variants() {
-        generate_to(shell, &mut cmd, "ppd", outdir.clone())?;
+        clap_complete::generate_to(shell, &mut cmd, "ppd", outdir.clone())?;
     }
 
-    // TODO: save the other manpages for subcommands
-    let man = clap_mangen::Man::new(cmd);
-    let mut man_buf = Vec::<u8>::default();
-    man.render(&mut man_buf)?;
-
-    std::fs::write(out_path.join("ppd.1"), man_buf)?;
+    clap_mangen::generate_to(cmd, out_path)?;
 
     Ok(())
 }

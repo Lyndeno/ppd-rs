@@ -50,7 +50,7 @@
             --bash ./target/release/build/ppd-*/out/ppd.bash \
             --fish ./target/release/build/ppd-*/out/ppd.fish \
             --zsh ./target/release/build/ppd-*/out/_ppd
-          installManPage ./target/release/build/ppd-*/out/ppd.1
+          installManPage ./target/release/build/ppd-*/out/*.1
         '';
       };
 
