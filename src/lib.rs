@@ -16,7 +16,7 @@
 //!
 //! ## Usage
 //!
-//! ```rust
+//! ```no_run
 //! use ppd::{PpdProxyBlocking, Result};
 //! use zbus::blocking::Connection;
 //!
