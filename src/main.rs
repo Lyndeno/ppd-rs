@@ -56,24 +56,33 @@ fn print_profile(proxy: &PpdProxyBlocking) -> Result<()> {
 fn list(proxy: &PpdProxyBlocking) -> Result<()> {
     let current = proxy.active_profile()?;
     let profiles = proxy.profiles()?;
+    let degraded = proxy
+        .performance_degraded()?
+        .as_ref()
+        .unwrap_or(&String::from("no"))
+        .to_string();
 
-    for profile in profiles {
-        if current == profile.profile {
-            println!("* {}:", profile.profile);
+    let mut profiles_iter = profiles.into_iter().rev().peekable();
+
+    while let Some(profile) = profiles_iter.next() {
+        let degraded_string = if profile.profile == "performance" {
+            Some(degraded.clone())
         } else {
-            println!("  {}:", profile.profile);
-        }
+            None
+        };
+
+        let current_marker = if current == profile.profile { "*" } else { " " };
+        println!("{} {}:", current_marker, profile.profile);
         println!("    CpuDriver:  {}", profile.cpu_driver);
-        if let Some(s) = profile.platform_driver {
+        if let Some(s) = profile.platform_driver.clone() {
             println!("    PlatformDriver:  {}", s);
         }
-        if profile.profile == "performance" {
-            let degraded_string = proxy
-                .performance_degraded()?
-                .as_ref()
-                .unwrap_or(&String::from("no"))
-                .to_string();
-            println!("    Degraded:  {}", degraded_string);
+        if let Some(s) = degraded_string {
+            println!("    Degraded:  {}", s);
+        }
+
+        if profiles_iter.peek().is_some() {
+            println!();
         }
     }
     Ok(())
