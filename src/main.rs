@@ -1,3 +1,11 @@
+//! Command-line utility for interacting with the Power Profiles Daemon
+//!
+//! This utility provides a convenient interface to view and control
+//! power profiles on Linux systems that use the Power Profiles Daemon.
+//!
+//! Run without arguments to list available profiles, or use one of
+//! the available subcommands to perform specific operations.
+
 use std::collections::HashSet;
 
 use clap::Parser;
@@ -10,11 +18,16 @@ use ppd::error::{PpdError, Result};
 
 use zbus::blocking::Connection;
 
+/// Main entry point for the ppd utility
 fn main() -> Result<()> {
+    // Parse command-line arguments
     let cli = Args::parse();
 
+    // Connect to the system D-Bus and create a proxy to the Power Profiles Daemon
     let connection = Connection::system()?;
     let proxy = PpdProxyBlocking::new(&connection)?;
+
+    // Execute the appropriate command (or list if no command specified)
     match cli.command {
         Some(c) => match c {
             args::Commands::Get => print_profile(&proxy)?,
@@ -47,12 +60,26 @@ fn main() -> Result<()> {
     Ok(())
 }
 
+/// Print the currently active power profile
+///
+/// # Arguments
+///
+/// * `proxy` - The PPD proxy object
 fn print_profile(proxy: &PpdProxyBlocking) -> Result<()> {
     let reply = proxy.active_profile()?;
     println!("{reply}");
     Ok(())
 }
 
+/// List all available power profiles and their properties
+///
+/// This function displays all available profiles with their respective
+/// drivers and settings. The currently active profile is marked with
+/// an asterisk (*).
+///
+/// # Arguments
+///
+/// * `proxy` - The PPD proxy object
 fn list(proxy: &PpdProxyBlocking) -> Result<()> {
     let current = proxy.active_profile()?;
     let profiles = proxy.profiles()?;
@@ -88,6 +115,16 @@ fn list(proxy: &PpdProxyBlocking) -> Result<()> {
     Ok(())
 }
 
+/// Set the active power profile
+///
+/// # Arguments
+///
+/// * `proxy` - The PPD proxy object
+/// * `profile` - The name of the profile to set as active
+///
+/// # Returns
+///
+/// An error if the requested profile does not exist
 fn set(proxy: &PpdProxyBlocking, profile: String) -> Result<()> {
     let profiles_names: HashSet<_> = proxy
         .profiles()?
@@ -102,12 +139,22 @@ fn set(proxy: &PpdProxyBlocking, profile: String) -> Result<()> {
     }
 }
 
+/// Query whether battery-aware behavior is enabled
+///
+/// # Arguments
+///
+/// * `proxy` - The PPD proxy object
 fn query_battery_aware(proxy: &PpdProxyBlocking) -> Result<()> {
     let ba = proxy.battery_aware()?;
     println!("Dynamic changes from charger and battery events: {}", ba);
     Ok(())
 }
 
+/// List all available power-related actions
+///
+/// # Arguments
+///
+/// * `proxy` - The PPD proxy object
 fn list_actions(proxy: &PpdProxyBlocking) -> Result<()> {
     for action in proxy.actions_info()? {
         println!("Name: {}", action.name);
@@ -117,6 +164,20 @@ fn list_actions(proxy: &PpdProxyBlocking) -> Result<()> {
     Ok(())
 }
 
+/// Configure battery-aware behavior
+///
+/// When enabled, the system may automatically adjust the power profile
+/// based on whether the system is on battery or connected to power.
+///
+/// # Arguments
+///
+/// * `proxy` - The PPD proxy object
+/// * `enable` - Whether to enable battery-aware behavior
+/// * `disable` - Whether to disable battery-aware behavior
+///
+/// # Returns
+///
+/// An error if both enable and disable are true, or if neither is true
 fn configure_battery_aware(proxy: &PpdProxyBlocking, enable: bool, disable: bool) -> Result<()> {
     if enable && disable {
         Err(PpdError::InvalidConfig(
