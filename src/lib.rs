@@ -56,7 +56,7 @@ pub struct Profile {
     /// Optional platform-specific driver information
     pub platform_driver: Option<String>,
     /// The CPU driver used for this profile
-    pub cpu_driver: String,
+    pub cpu_driver: Option<String>,
 }
 
 /// Represents a configurable power-related action

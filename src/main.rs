@@ -100,9 +100,11 @@ fn list(proxy: &PpdProxyBlocking) -> Result<()> {
 
         let current_marker = if current == profile.profile { "*" } else { " " };
         println!("{} {}:", current_marker, profile.profile);
-        println!("    CpuDriver:  {}", profile.cpu_driver);
+        if let Some(s) = profile.cpu_driver.clone() {
+            println!("    CpuDriver:\t{}", s);
+        }
         if let Some(s) = profile.platform_driver.clone() {
-            println!("    PlatformDriver:  {}", s);
+            println!("    PlatformDriver:\t{}", s);
         }
         if let Some(s) = degraded_string {
             println!("    Degraded:  {}", s);
