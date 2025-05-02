@@ -67,6 +67,34 @@
 
           inherit hooks;
         };
+
+      test = pkgs.nixosTest {
+        name = "ppd-test";
+        nodes.machine = {
+          config,
+          pkgs,
+          ...
+        }: {
+          services.power-profiles-daemon.enable = true;
+          system.stateVersion = "24.11";
+          environment.systemPackages = [ppd];
+        };
+
+        testScript = ''
+          import sys
+          machine.wait_for_unit("dbus.socket")
+          ppctl_out = machine.execute("powerprofilesctl")
+          print("powerprofilesctl:")
+          print(ppctl_out[1])
+          ppd_out = machine.execute("ppd")
+          print("ppd:")
+          print(ppd_out[1])
+          if (ppd_out[1] == ppctl_out[1]):
+            sys.exit(0)
+          else:
+            sys.exit(-1)
+        '';
+      };
     in rec {
       checks = {
         inherit ppd;
@@ -88,6 +116,8 @@
         pre-commit-check = pre-commit-check {
           alejandra.enable = true;
         };
+
+        vm-test = test;
       };
       packages.ppd = ppd;
       packages.default = packages.ppd;
