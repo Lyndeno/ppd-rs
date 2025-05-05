@@ -38,7 +38,8 @@
 //! }
 //! ```
 
-use zbus::zvariant::{DeserializeDict, Optional, OwnedValue, SerializeDict, Type, Value};
+use serde::{Deserialize, Serialize};
+use zbus::zvariant::{Optional, OwnedValue, Type, Value};
 
 use zbus::{Result as ZbusResult, proxy};
 
@@ -46,8 +47,9 @@ use zbus::{Result as ZbusResult, proxy};
 ///
 /// This struct contains information about a power profile including its name,
 /// driver information, and CPU settings.
-#[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
+#[derive(Serialize, Deserialize, Debug, Type, OwnedValue, Value)]
 #[zvariant(signature = "dict", rename_all = "PascalCase")]
+#[serde(rename_all = "PascalCase")]
 pub struct Profile {
     /// The name of the profile (e.g., "power-saver", "balanced", "performance")
     pub profile: String,
@@ -63,8 +65,9 @@ pub struct Profile {
 ///
 /// Actions can be enabled or disabled to control system behavior
 /// in different power scenarios.
-#[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
+#[derive(Serialize, Deserialize, Debug, Type, OwnedValue, Value)]
 #[zvariant(signature = "dict", rename_all = "PascalCase")]
+#[serde(rename_all = "PascalCase")]
 pub struct Action {
     /// The name of the action
     pub name: String,
@@ -78,8 +81,9 @@ pub struct Action {
 ///
 /// When an application needs to temporarily hold a specific power profile,
 /// this structure tracks that information.
-#[derive(SerializeDict, DeserializeDict, Debug, Type, OwnedValue, Value)]
+#[derive(Serialize, Deserialize, Debug, Type, OwnedValue, Value)]
 #[zvariant(signature = "dict", rename_all = "PascalCase")]
+#[serde(rename_all = "PascalCase")]
 pub struct ActiveHold {
     /// The reason provided for holding this profile
     pub reason: String,

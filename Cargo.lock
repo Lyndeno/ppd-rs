@@ -561,6 +561,7 @@ dependencies = [
  "clap",
  "clap_complete",
  "clap_mangen",
+ "serde",
  "thiserror",
  "zbus",
 ]
@@ -678,6 +679,12 @@ checksum = "8f92a496fb766b417c996b9c5e57daf2f7ad3b0bebe1ccfca4856390e3d3bb67"
 dependencies = [
  "autocfg",
 ]
+
+[[package]]
+name = "static_assertions"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
 name = "strsim"
@@ -924,8 +931,9 @@ dependencies = [
 
 [[package]]
 name = "zbus"
-version = "5.5.0"
-source = "git+https://github.com/lyndeno/zbus?branch=rename_value_clean#626a477a56d538e780b732da0a2f18ccdb1739c6"
+version = "5.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2522b82023923eecb0b366da727ec883ace092e7887b61d3da5139f26b44da58"
 dependencies = [
  "async-broadcast",
  "async-executor",
@@ -956,8 +964,9 @@ dependencies = [
 
 [[package]]
 name = "zbus_macros"
-version = "5.5.0"
-source = "git+https://github.com/lyndeno/zbus?branch=rename_value_clean#626a477a56d538e780b732da0a2f18ccdb1739c6"
+version = "5.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "05d2e12843c75108c00c618c2e8ef9675b50b6ec095b36dc965f2e5aed463c15"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -971,17 +980,20 @@ dependencies = [
 [[package]]
 name = "zbus_names"
 version = "4.2.0"
-source = "git+https://github.com/lyndeno/zbus?branch=rename_value_clean#626a477a56d538e780b732da0a2f18ccdb1739c6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7be68e64bf6ce8db94f63e72f0c7eb9a60d733f7e0499e628dfab0f84d6bcb97"
 dependencies = [
  "serde",
+ "static_assertions",
  "winnow",
  "zvariant",
 ]
 
 [[package]]
 name = "zvariant"
-version = "5.4.0"
-source = "git+https://github.com/lyndeno/zbus?branch=rename_value_clean#626a477a56d538e780b732da0a2f18ccdb1739c6"
+version = "5.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "557e89d54880377a507c94cd5452f20e35d14325faf9d2958ebeadce0966c1b2"
 dependencies = [
  "endi",
  "enumflags2",
@@ -993,8 +1005,9 @@ dependencies = [
 
 [[package]]
 name = "zvariant_derive"
-version = "5.4.0"
-source = "git+https://github.com/lyndeno/zbus?branch=rename_value_clean#626a477a56d538e780b732da0a2f18ccdb1739c6"
+version = "5.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "757779842a0d242061d24c28be589ce392e45350dfb9186dfd7a042a2e19870c"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -1006,11 +1019,13 @@ dependencies = [
 [[package]]
 name = "zvariant_utils"
 version = "3.2.0"
-source = "git+https://github.com/lyndeno/zbus?branch=rename_value_clean#626a477a56d538e780b732da0a2f18ccdb1739c6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e16edfee43e5d7b553b77872d99bc36afdda75c223ca7ad5e3fbecd82ca5fc34"
 dependencies = [
  "proc-macro2",
  "quote",
  "serde",
+ "static_assertions",
  "syn",
  "winnow",
 ]
