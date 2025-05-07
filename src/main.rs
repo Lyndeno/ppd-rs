@@ -13,7 +13,7 @@ use ppd::PpdProxyBlocking;
 
 mod args;
 
-use args::Args;
+use args::{Args, Commands};
 use ppd::error::{PpdError, Result};
 
 use zbus::blocking::Connection;
@@ -30,31 +30,29 @@ fn main() -> Result<()> {
     // Execute the appropriate command (or list if no command specified)
     match cli.command {
         Some(c) => match c {
-            args::Commands::Get => print_profile(&proxy)?,
-            args::Commands::List => list(&proxy)?,
-            args::Commands::ListHolds => {
-                Err(PpdError::Unimplemented("ListHolds command".to_string()))?
-            }
-            args::Commands::Set { profile } => set(&proxy, profile)?,
-            args::Commands::ListActions => list_actions(&proxy)?,
-            args::Commands::Launch {
+            Commands::Get => print_profile(&proxy)?,
+            Commands::List => list(&proxy)?,
+            Commands::ListHolds => Err(PpdError::Unimplemented("ListHolds command".to_string()))?,
+            Commands::Set { profile } => set(&proxy, profile)?,
+            Commands::ListActions => list_actions(&proxy)?,
+            Commands::Launch {
                 arguments: _,
                 profile: _,
                 reason: _,
                 appid: _,
             } => Err(PpdError::Unimplemented("Launch command".to_string()))?,
-            args::Commands::QueryBatteryAware => query_battery_aware(&proxy)?,
-            args::Commands::ConfigureAction {
+            Commands::QueryBatteryAware => query_battery_aware(&proxy)?,
+            Commands::ConfigureAction {
                 action: _,
                 enable: _,
                 disable: _,
             } => Err(PpdError::Unimplemented(
                 "ConfigureAction command".to_string(),
             ))?,
-            args::Commands::ConfigureBatteryAware { enable, disable } => {
+            Commands::ConfigureBatteryAware { enable, disable } => {
                 configure_battery_aware(&proxy, enable, disable)?
             }
-            args::Commands::Watch => watch(&proxy)?,
+            Commands::Watch => watch(&proxy)?,
         },
         _ => list(&proxy)?,
     };
