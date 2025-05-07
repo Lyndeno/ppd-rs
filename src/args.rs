@@ -80,4 +80,7 @@ pub enum Commands {
         #[arg(short, long)]
         appid: Option<String>,
     },
+
+    /// Watch for changes to the active profile
+    Watch,
 }

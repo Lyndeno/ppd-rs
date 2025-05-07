@@ -54,6 +54,7 @@ fn main() -> Result<()> {
             args::Commands::ConfigureBatteryAware { enable, disable } => {
                 configure_battery_aware(&proxy, enable, disable)?
             }
+            args::Commands::Watch => watch(&proxy)?,
         },
         _ => list(&proxy)?,
     };
@@ -113,6 +114,16 @@ fn list(proxy: &PpdProxyBlocking) -> Result<()> {
         if profiles_iter.peek().is_some() {
             println!();
         }
+    }
+    Ok(())
+}
+
+fn watch(proxy: &PpdProxyBlocking) -> Result<()> {
+    println!("{}", proxy.active_profile()?);
+    let signal = proxy.receive_active_profile_changed();
+    for p in signal {
+        let name = p.get()?;
+        println!("{name}");
     }
     Ok(())
 }
