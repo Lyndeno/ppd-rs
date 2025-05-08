@@ -3,6 +3,9 @@ name = "ppd"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
+description = "Interact with power-profiles-daemon with Rust"
+homepage = "https://github.com/Lyndeno/ppd-rs"
+repository = "https://github.com/Lyndeno/ppd-rs"
 
 [dependencies]
 zbus = "5.6"
