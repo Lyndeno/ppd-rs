@@ -116,6 +116,13 @@ fn list(proxy: &PpdProxyBlocking) -> Result<()> {
     Ok(())
 }
 
+/// Watch for changes to the active profile
+///
+/// This function loops endlessly
+///
+/// # Arguments
+///
+/// * `proxy` - The PPD proxy object
 fn watch(proxy: &PpdProxyBlocking) -> Result<()> {
     println!("{}", proxy.active_profile()?);
     let signal = proxy.receive_active_profile_changed();
