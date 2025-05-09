@@ -162,6 +162,12 @@
       hydraJobs = {
         inherit (self) checks packages devShells;
       };
-      githubActions = nix-github-actions.lib.mkGithubMatrix {inherit (self) checks;};
+      githubActions = nix-github-actions.lib.mkGithubMatrix {
+        checks = {
+          inherit (self.checks) x86_64-linux;
+          # KVM is not working on arm runners
+          aarch64-linux = builtins.removeAttrs self.checks.aarch64-linux ["vm-test"];
+        };
+      };
     };
 }
