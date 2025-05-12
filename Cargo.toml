@@ -8,7 +8,7 @@ homepage = "https://github.com/Lyndeno/ppd-rs"
 repository = "https://github.com/Lyndeno/ppd-rs"
 
 [dependencies]
-zbus = "5.6"
+zbus = { version = "5.6", default-features = false }
 clap = { version = "4.*.*", features = ["derive"] }
 thiserror = "2.0"
 serde = "1"
@@ -17,3 +17,9 @@ serde = "1"
 clap = { version = "4.*.*", features = ["derive"] }
 clap_complete = "4.*.*"
 clap_mangen = "0.2.*"
+
+[features]
+default = [ "async-io", "blocking-api" ]
+async-io = ["zbus/async-io"]
+blocking-api = ["zbus/blocking-api"]
+tokio = ["zbus/tokio"]
