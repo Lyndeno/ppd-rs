@@ -9,7 +9,7 @@
 use std::collections::HashSet;
 
 use clap::Parser;
-use ppd::PpdProxyBlocking;
+use ppd::{PowerProfile, PpdProxyBlocking};
 
 mod args;
 
@@ -33,7 +33,11 @@ fn main() -> Result<()> {
             Commands::Get => print_profile(&proxy)?,
             Commands::List => list(&proxy)?,
             Commands::ListHolds => Err(PpdError::Unimplemented("ListHolds command".to_string()))?,
-            Commands::Set { profile } => set(&proxy, profile)?,
+            Commands::Set { profile } => set(
+                &proxy,
+                PowerProfile::try_from(profile)
+                    .map_err(|_| PpdError::Unimplemented("Bad profile".to_owned()))?,
+            )?,
             Commands::ListActions => list_actions(&proxy)?,
             Commands::Launch {
                 arguments: _,
@@ -91,7 +95,7 @@ fn list(proxy: &PpdProxyBlocking) -> Result<()> {
     let mut profiles_iter = profiles.into_iter().rev().peekable();
 
     while let Some(profile) = profiles_iter.next() {
-        let degraded_string = if profile.profile == "performance" {
+        let degraded_string = if profile.profile == PowerProfile::Performance {
             Some(degraded.clone())
         } else {
             None
@@ -143,7 +147,7 @@ fn watch(proxy: &PpdProxyBlocking) -> Result<()> {
 /// # Returns
 ///
 /// An error if the requested profile does not exist
-fn set(proxy: &PpdProxyBlocking, profile: String) -> Result<()> {
+fn set(proxy: &PpdProxyBlocking, profile: PowerProfile) -> Result<()> {
     let profiles_names: HashSet<_> = proxy
         .profiles()?
         .iter()

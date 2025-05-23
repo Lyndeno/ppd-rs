@@ -5,6 +5,8 @@
 
 use thiserror::Error;
 
+use crate::PowerProfile;
+
 /// Errors that can occur when using the ppd-rs library
 #[derive(Error, Debug)]
 pub enum PpdError {
@@ -14,7 +16,7 @@ pub enum PpdError {
 
     /// Requested profile was not found or is invalid
     #[error("Invalid profile: {0}")]
-    InvalidProfile(String),
+    InvalidProfile(PowerProfile),
 
     /// Configuration options provided were invalid
     #[error("Invalid configuration: {0}")]

@@ -38,10 +38,46 @@
 //! }
 //! ```
 
+use std::fmt::Display;
+
 use serde::{Deserialize, Serialize};
 use zbus::zvariant::{Optional, OwnedValue, Type, Value};
 
 use zbus::{Result as ZbusResult, proxy};
+
+#[derive(Deserialize, Serialize, Type, Value, OwnedValue, Debug, PartialEq, Clone, Eq, Hash)]
+#[zvariant(signature = "s", rename_all = "kebab-case")]
+pub enum PowerProfile {
+    PowerSaver,
+    Balanced,
+    Performance,
+}
+
+impl Display for PowerProfile {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                PowerProfile::Balanced => "balanced",
+                PowerProfile::PowerSaver => "power-saver",
+                PowerProfile::Performance => "performance",
+            }
+        )
+    }
+}
+
+impl TryFrom<String> for PowerProfile {
+    type Error = ();
+    fn try_from(value: String) -> std::result::Result<Self, Self::Error> {
+        match value.as_str() {
+            "balanced" => Ok(PowerProfile::Balanced),
+            "power-saver" => Ok(PowerProfile::PowerSaver),
+            "performance" => Ok(PowerProfile::Performance),
+            _ => Err(()),
+        }
+    }
+}
 
 /// Represents a power profile configuration
 ///
@@ -52,7 +88,7 @@ use zbus::{Result as ZbusResult, proxy};
 #[serde(rename_all = "PascalCase")]
 pub struct Profile {
     /// The name of the profile (e.g., "power-saver", "balanced", "performance")
-    pub profile: String,
+    pub profile: PowerProfile,
     /// The name of the driver used for this profile
     pub driver: String,
     /// Optional platform-specific driver information
@@ -88,7 +124,7 @@ pub struct ActiveHold {
     /// The reason provided for holding this profile
     pub reason: String,
     /// The name of the profile being held
-    pub profile: String,
+    pub profile: PowerProfile,
     /// The application ID of the application holding the profile
     pub application_id: String,
 }
@@ -117,7 +153,7 @@ pub trait Ppd {
     /// A cookie that can be used later to release the hold
     fn hold_profile(
         &self,
-        profile: String,
+        profile: PowerProfile,
         reason: String,
         application_id: String,
     ) -> ZbusResult<u32>;
@@ -151,7 +187,7 @@ pub trait Ppd {
     ///
     /// The name of the active profile
     #[zbus(property)]
-    fn active_profile(&self) -> ZbusResult<String>;
+    fn active_profile(&self) -> ZbusResult<PowerProfile>;
 
     /// Set the active power profile
     ///
@@ -159,7 +195,7 @@ pub trait Ppd {
     ///
     /// * `string` - The name of the profile to activate
     #[zbus(property)]
-    fn set_active_profile(&self, string: String) -> ZbusResult<()>;
+    fn set_active_profile(&self, string: PowerProfile) -> ZbusResult<()>;
 
     /// Get information about why performance might be inhibited
     ///
