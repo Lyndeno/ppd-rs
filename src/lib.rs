@@ -275,3 +275,30 @@ pub trait Ppd {
 /// Error handling for the ppd library
 pub mod error;
 pub use error::{PpdError, Result};
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_from_string() {
+        let p = PowerProfile::Performance;
+        let s = "performance";
+        assert_eq!(p, PowerProfile::try_from(s.to_owned()).unwrap())
+    }
+
+    #[test]
+    fn test_from_value() {
+        let p = PowerProfile::Performance;
+        let v = Value::new("performance");
+
+        assert_eq!(p, PowerProfile::try_from(v).unwrap())
+    }
+
+    #[test]
+    fn test_display() {
+        let p = PowerProfile::PowerSaver;
+
+        assert_eq!(p.to_string(), "power-saver".to_owned())
+    }
+}
