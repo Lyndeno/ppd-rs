@@ -83,7 +83,7 @@ impl TryFrom<String> for PowerProfile {
 ///
 /// This struct contains information about a power profile including its name,
 /// driver information, and CPU settings.
-#[derive(Serialize, Deserialize, Debug, Type, OwnedValue, Value)]
+#[derive(Deserialize, Serialize, Type, Value, OwnedValue, Debug, PartialEq, Clone, Eq, Hash)]
 #[zvariant(signature = "dict", rename_all = "PascalCase")]
 #[serde(rename_all = "PascalCase")]
 pub struct Profile {
@@ -101,7 +101,7 @@ pub struct Profile {
 ///
 /// Actions can be enabled or disabled to control system behavior
 /// in different power scenarios.
-#[derive(Serialize, Deserialize, Debug, Type, OwnedValue, Value)]
+#[derive(Deserialize, Serialize, Type, Value, OwnedValue, Debug, PartialEq, Clone, Eq, Hash)]
 #[zvariant(signature = "dict", rename_all = "PascalCase")]
 #[serde(rename_all = "PascalCase")]
 pub struct Action {
@@ -117,7 +117,7 @@ pub struct Action {
 ///
 /// When an application needs to temporarily hold a specific power profile,
 /// this structure tracks that information.
-#[derive(Serialize, Deserialize, Debug, Type, OwnedValue, Value)]
+#[derive(Deserialize, Serialize, Type, Value, OwnedValue, Debug, PartialEq, Clone, Eq, Hash)]
 #[zvariant(signature = "dict", rename_all = "PascalCase")]
 #[serde(rename_all = "PascalCase")]
 pub struct ActiveHold {
