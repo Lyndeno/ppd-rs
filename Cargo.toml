@@ -8,7 +8,7 @@ homepage = "https://github.com/Lyndeno/ppd-rs"
 repository = "https://github.com/Lyndeno/ppd-rs"
 
 [dependencies]
-zbus = { version = "5.7", default-features = false }
+zbus = { version = "5.9", default-features = false }
 clap = { version = "4.*.*", features = ["derive"] }
 thiserror = "2.0"
 serde = "1"
