@@ -10,11 +10,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-github-actions = {
-      url = "github:nix-community/nix-github-actions";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     ci.url = "github:Lyndeno/ci";
     ci.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -25,7 +20,6 @@
     utils,
     crane,
     pre-commit-hooks-nix,
-    nix-github-actions,
     ci,
   }: let
     systems = [
@@ -184,14 +178,5 @@
             ${checks.shellHook}
           '';
         };
-    })
-    // {
-      githubActions = nix-github-actions.lib.mkGithubMatrix {
-        checks = {
-          inherit (self.checks) x86_64-linux;
-          # KVM is not working on arm runners
-          aarch64-linux = builtins.removeAttrs self.checks.aarch64-linux ["vm-test"];
-        };
-      };
-    };
+    });
 }
