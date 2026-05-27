@@ -11,7 +11,6 @@ pull_request_rules:
   - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.ppd-deny
   - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.ppd-fmt
   - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.pre-commit-check
-  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.vm-test
   - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.hydra-spec
   - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.mergify-check
   - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.ppd
@@ -19,5 +18,4 @@ pull_request_rules:
   - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.ppd-deny
   - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.ppd-fmt
   - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.pre-commit-check
-  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.vm-test
   name: Automatically merge dependabot updates

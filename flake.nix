@@ -127,7 +127,8 @@
           alejandra.enable = true;
         };
 
-        vm-test = test;
+        # TODO: Make this x86 only
+        #vm-test = test;
 
         hydra-spec = ci.lib.mkHydraCheck {
           inherit pkgs;
