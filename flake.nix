@@ -14,6 +14,9 @@
       url = "github:nix-community/nix-github-actions";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    ci.url = "github:Lyndeno/ci";
+    ci.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -23,6 +26,7 @@
     crane,
     pre-commit-hooks-nix,
     nix-github-actions,
+    ci,
   }: let
     systems = [
       "x86_64-linux"
@@ -124,9 +128,31 @@
         };
 
         vm-test = test;
+
+        hydra-spec = ci.lib.mkHydraCheck {
+          inherit pkgs;
+          specPackage = packages.hydra-spec;
+          specFile = ./.hydra/spec.json;
+        };
+
+        mergify-check = ci.lib.mkMergifyCheck {
+          inherit pkgs;
+          mergifyPackage = packages.mergify;
+          mergifyFile = ./.mergify.yml;
+        };
       };
       packages.ppd = ppd;
       packages.default = packages.ppd;
+      packages.hydra-spec = ci.lib.mkHydraSpec {
+        inherit pkgs;
+        owner = "Lyndeno";
+        repo = "ppd-rs";
+      };
+      packages.mergify = ci.lib.mkMergifyConfig {
+        inherit pkgs;
+        projectName = "ppd-rs";
+        checks = self.checks;
+      };
 
       apps.ppd = utils.lib.mkApp {
         drv = packages.ppd;
@@ -159,9 +185,6 @@
         };
     })
     // {
-      hydraJobs = {
-        inherit (self) checks packages devShells;
-      };
       githubActions = nix-github-actions.lib.mkGithubMatrix {
         checks = {
           inherit (self.checks) x86_64-linux;
