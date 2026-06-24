@@ -6,7 +6,7 @@
 //! Run without arguments to list available profiles, or use one of
 //! the available subcommands to perform specific operations.
 
-use std::collections::HashSet;
+use std::{collections::HashSet, process::Command};
 
 use clap::Parser;
 use ppd::PpdProxyBlocking;
@@ -23,6 +23,8 @@ fn main() -> Result<()> {
     // Parse command-line arguments
     let cli = Args::parse();
 
+    let mut code = None;
+
     // Connect to the system D-Bus and create a proxy to the Power Profiles Daemon
     let connection = Connection::system()?;
     let proxy = PpdProxyBlocking::new(&connection)?;
@@ -36,11 +38,12 @@ fn main() -> Result<()> {
             Commands::Set { profile } => set(&proxy, profile)?,
             Commands::ListActions => list_actions(&proxy)?,
             Commands::Launch {
-                arguments: _,
-                profile: _,
-                reason: _,
-                appid: _,
-            } => Err(PpdError::Unimplemented("Launch command".to_string()))?,
+                program,
+                arguments,
+                profile,
+                reason,
+                appid,
+            } => code = launch(&proxy, program, arguments, profile, reason, appid)?,
             Commands::QueryBatteryAware => query_battery_aware(&proxy)?,
             Commands::ConfigureAction {
                 action: _,
@@ -56,7 +59,34 @@ fn main() -> Result<()> {
         },
         _ => list(&proxy)?,
     };
-    Ok(())
+    match code {
+        Some(c) => std::process::exit(c),
+        _ => Ok(()),
+    }
+}
+
+fn launch(
+    proxy: &PpdProxyBlocking,
+    program: String,
+    arguments: Vec<String>,
+    profile: Option<String>,
+    reason: Option<String>,
+    appid: Option<String>,
+) -> Result<Option<i32>> {
+    let handle = proxy.hold_profile(
+        profile.unwrap_or_default(),
+        reason.unwrap_or_default(),
+        appid.unwrap_or(String::from("performance")),
+    )?;
+
+    let status = Command::new(program)
+        .args(arguments)
+        .status()
+        .map(|x| x.code());
+
+    proxy.release_profile(handle)?;
+
+    Ok(status.unwrap_or(Some(-1)))
 }
 
 /// Print the currently active power profile

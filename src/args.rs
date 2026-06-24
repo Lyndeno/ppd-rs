@@ -66,10 +66,13 @@ pub enum Commands {
     /// Launch an application with a specific power profile
     Launch {
         /// Command and arguments to launch
-        arguments: String,
+        program: String,
+
+        /// Command and arguments to launch
+        arguments: Vec<String>,
 
         /// Profile to use for the application
-        #[arg(short, long)]
+        #[arg(short, long, default_value = "performance")]
         profile: Option<String>,
 
         /// Reason for the profile hold
