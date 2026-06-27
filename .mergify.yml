@@ -4,18 +4,28 @@ pull_request_rules:
       method: merge
   conditions:
   - author=dependabot[bot]
+  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.devshell-default
   - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.hydra-spec
-  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.mergify-check
-  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.ppd
-  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.ppd-clippy
-  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.ppd-deny
-  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.ppd-fmt
-  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.pre-commit-check
+  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.mergify
+  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.pkgs-formatter
+  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.pkgs-formatter-version
+  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.pkgs-hydra-spec
+  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.pkgs-mergify
+  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.pkgs-ppd
+  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.pkgs-ppd-ppd-clippy
+  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.pkgs-ppd-ppd-deny
+  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.pkgs-ppd-ppd-fmt
+  - check-success*=ci/hydra:ppd-rs:*:aarch64-linux.pre-commit
+  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.devshell-default
   - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.hydra-spec
-  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.mergify-check
-  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.ppd
-  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.ppd-clippy
-  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.ppd-deny
-  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.ppd-fmt
-  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.pre-commit-check
+  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.mergify
+  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.pkgs-formatter
+  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.pkgs-formatter-version
+  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.pkgs-hydra-spec
+  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.pkgs-mergify
+  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.pkgs-ppd
+  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.pkgs-ppd-ppd-clippy
+  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.pkgs-ppd-ppd-deny
+  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.pkgs-ppd-ppd-fmt
+  - check-success*=ci/hydra:ppd-rs:*:x86_64-linux.pre-commit
   name: Automatically merge dependabot updates
